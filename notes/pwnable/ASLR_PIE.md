@@ -17,10 +17,17 @@ sudo sh -c "echo 2 > /proc/sys/kernel/randomize_va_space"
 ### 참고
 **static library**의 경우 컴파일 타임에 **executable file**과 링크되기 때문에, 주소가 컴파일 시점에 결정되어 aslr의 영향을 받지 않는다.
 
+### 공격기법
+**aslr**이 켜져있다면 **(dynamic) library** 함수의 주소가 실행시점마다 바뀌기 때문에 **libc_base**를 실행시점마다 구해야 한다.   
+
+**library 함수**의 **offset**은 일정하기 때문에 **GOT**의 값을 통해 **libc_base**를 구할 수 있다.   
+이를 통해 **system** 함수의 실제 주소를 구할 수 있어 **```GOT overwrite```** 를 하거나, **```ret2main```** 을 통해 **ROP**를 시도할 수 있다.
+
 ---
 ## PIE
 기본적으로 **executable file**의 주소는 실행시점마다 바뀌지 않는다.   
-**```PIE(Position Independent Executable)```**는 **executable file**의 주소 또한 실행시점마다 바뀌도록 해준다.    
+**```PIE(Position Independent Executable)```** 는 **executable file**의 주소 또한 실행시점마다 바뀌도록 해준다.    
+
 Executable file 또한 shared object 타입(DYN)을 갖도록 하여 구현하기 때문에, aslr이 꺼져있다면 주소가 실행시점마다 바뀌지 않고 고정된다.   
    
 **따라서, PIE 그 자체는 보호기법이 아니다.**
